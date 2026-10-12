@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Para ti 💌</title>
+<style>
+  :root{--rosa:#ff5c8a;--fondo1:#ffe3ec;--fondo2:#ffc7d6;--texto:#5a2a3a}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{min-height:100vh;display:flex;align-items:center;justify-content:center;
+       font-family:'Segoe UI',system-ui,sans-serif;
+       background:linear-gradient(135deg,var(--fondo1),var(--fondo2));
+       color:var(--texto);overflow:hidden;padding:16px}
+  .card{background:rgba(255,255,255,.88);border-radius:28px;padding:36px 28px;
+        max-width:420px;width:100%;text-align:center;
+        box-shadow:0 20px 50px rgba(255,92,138,.25);position:relative;z-index:2}
+  h1{font-size:1.9rem;color:var(--rosa);margin-bottom:6px}
+  .pregunta{font-size:1.3rem;margin:14px 0 24px}
+  .botones{display:flex;gap:14px;justify-content:center;align-items:center;flex-wrap:wrap;min-height:70px}
+  button{border:none;border-radius:999px;padding:12px 30px;font-size:1.1rem;font-weight:700;
+         cursor:pointer;transition:transform .2s,font-size .3s,padding .3s}
+  button:hover{transform:scale(1.07)}
+  #si{background:var(--rosa);color:#fff;box-shadow:0 6px 16px rgba(255,92,138,.4)}
+  #no{background:#eee;color:#777}
+  .latido{font-size:4rem;animation:latido 1s infinite}
+  @keyframes latido{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+  .oculto{display:none}
+  #gato svg{width:170px;height:170px}
+  .lagrima{animation:caer 1.2s infinite ease-in}
+  .lagrima.d2{animation-delay:.6s}
+  @keyframes caer{0%{transform:translateY(0);opacity:1}100%{transform:translateY(40px);opacity:0}}
+  .mensaje-no{margin:6px 0 18px;font-size:1.1rem;font-weight:600}
+  .flotante{position:fixed;bottom:-60px;font-size:2rem;animation:subir linear forwards;
+            z-index:1;pointer-events:none}
+  @keyframes subir{to{transform:translateY(-115vh) rotate(25deg);opacity:0}}
+  .emoji-si{font-size:5rem;animation:pop .6s ease}
+  @keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+</style>
+</head>
+<body>
+<div class="card">
+  <!-- Pantalla de la pregunta -->
+  <div id="inicio">
+    <div class="latido">💗</div>
+    <h1>Te quiero, <span class="nombre"></span></h1>
+    <p class="pregunta">¿Tu me quieres? 🥺</p>
+
+    <!-- Gatito llorando (aparece si dice que no) -->
+    <div id="gato" class="oculto">
+      <svg viewBox="0 0 200 200" aria-label="Gatito llorando">
+        <polygon points="45,75 58,18 92,55" fill="#b9b9c6"/>
+        <polygon points="155,75 142,18 108,55" fill="#b9b9c6"/>
+        <polygon points="55,62 61,34 80,55" fill="#ffc2d1"/>
+        <polygon points="145,62 139,34 120,55" fill="#ffc2d1"/>
+        <ellipse cx="100" cy="108" rx="66" ry="58" fill="#cfcfda"/>
+        <path d="M60 86 L85 78" stroke="#555" stroke-width="4" stroke-linecap="round"/>
+        <path d="M115 78 L140 86" stroke="#555" stroke-width="4" stroke-linecap="round"/>
+        <path d="M62 104 Q75 94 88 104" stroke="#444" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <path d="M112 104 Q125 94 138 104" stroke="#444" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <ellipse class="lagrima" cx="72" cy="114" rx="5" ry="8" fill="#6ec6ff"/>
+        <ellipse class="lagrima d2" cx="128" cy="114" rx="5" ry="8" fill="#6ec6ff"/>
+        <polygon points="94,118 106,118 100,125" fill="#ff8fab"/>
+        <path d="M86 142 Q100 130 114 142" stroke="#444" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <g stroke="#888" stroke-width="2" stroke-linecap="round">
+          <line x1="40" y1="120" x2="75" y2="124"/><line x1="40" y1="132" x2="75" y2="130"/>
+          <line x1="160" y1="120" x2="125" y2="124"/><line x1="160" y1="132" x2="125" y2="130"/>
+        </g>
+      </svg>
+      <p class="mensaje-no" id="msgNo"></p>
+    </div>
+
+    <div class="botones">
+      <button id="si">Sí 💕</button>
+      <button id="no">No</button>
+    </div>
+  </div>
+
+  <!-- Pantalla final (si dice que sí) -->
+  <div id="final" class="oculto">
+    <div class="emoji-si">🥰</div>
+    <h1>¡Sabía que sí! 💖</h1>
+    <p class="pregunta">Eres lo más bonito que me ha pasado, <span class="nombre"></span>.</p>
+  </div>
+</div>
+
+<script>
+  // ✏️ CAMBIA AQUÍ EL NOMBRE DE LA PERSONA
+  const NOMBRE = "Yinet";
+
+  // También funciona poniendo ?nombre=Ana al final del link
+  const param = new URLSearchParams(location.search).get("nombre");
+  const nombre = (param && param.trim()) || NOMBRE;
+  document.querySelectorAll(".nombre").forEach(el => el.textContent = nombre);
+
+  const btnSi = document.getElementById("si");
+  const btnNo = document.getElementById("no");
+  const gato = document.getElementById("gato");
+  const msgNo = document.getElementById("msgNo");
+
+  const mensajes = [
+    "¿Segura? 😿",
+    "Piénsalo otra vez...",
+    "El gatito está llorando por tu culpa 😭",
+    "Última oportunidad 🥺",
+    "Ya, dale que sí 💔"
+  ];
+  let intentos = 0;
+  let tamSi = 1.1, tamNo = 1.1;
+
+  btnNo.addEventListener("click", () => {
+    gato.classList.remove("oculto");
+    msgNo.textContent = mensajes[Math.min(intentos, mensajes.length - 1)];
+    intentos++;
+    tamSi += 0.35;
+    tamNo = Math.max(0.7, tamNo - 0.1);
+    btnSi.style.fontSize = tamSi + "rem";
+    btnSi.style.padding = (12 + intentos * 3) + "px " + (30 + intentos * 8) + "px";
+    btnNo.style.fontSize = tamNo + "rem";
+  });
+
+  const emojis = ["💖","💕","💗","🌹","✨","💘","🥰"];
+  function corazon(){
+    const s = document.createElement("span");
+    s.className = "flotante";
+    s.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    s.style.left = Math.random() * 100 + "vw";
+    s.style.fontSize = (1.5 + Math.random() * 2) + "rem";
+    const dur = 3 + Math.random() * 3;
+    s.style.animationDuration = dur + "s";
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), dur * 1000);
+  }
+
+  btnSi.addEventListener("click", () => {
+    document.getElementById("inicio").classList.add("oculto");
+    document.getElementById("final").classList.remove("oculto");
+    for (let i = 0; i < 40; i++) setTimeout(corazon, i * 60);
+    setInterval(corazon, 350);
+  });
+</script>
+</body>
+</html>
